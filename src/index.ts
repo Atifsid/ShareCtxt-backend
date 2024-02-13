@@ -26,7 +26,28 @@ app.get("/doc", async (c) => {
     }
     return c.json(res);
   } catch (e) {
-    return c.json({ err: e }, 500);
+    return c.json({
+      code: 500,
+      message: e
+    });
+  }
+});
+
+app.get("/doc/:id", async (c) => {
+  const docId = c.req.param("id")
+  try {
+    let { results } = await c.env.DB.prepare("SELECT * FROM Documents WHERE id = ?").bind(docId).all();
+    const res: BaseResponseDTO<Record<string, unknown>[]> = {
+      code: 200,
+      message: `Successfully fetched Document ${docId}`,
+      data: results
+    }
+    return c.json(res);
+  } catch (e) {
+    return c.json({
+      code: 500,
+      message: e
+    });
   }
 });
 
@@ -40,7 +61,10 @@ app.post("/doc", async (c) => {
     }
     return c.json(res);
   } catch (e) {
-    return c.json({ err: e }, 500);
+    return c.json({
+      code: 500,
+      message: e
+    });
   }
 });
 
