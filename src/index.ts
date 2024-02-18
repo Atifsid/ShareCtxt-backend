@@ -54,11 +54,12 @@ app.get("/doc/:id", async (c) => {
 app.post("/doc", async (c) => {
   try {
     const doc: Doc = await c.req.json();
-    const { duration, last_row_id } = (await c.env.DB.prepare('INSERT INTO Documents (id, title, content) VALUES (?1, ?2, ?3)').bind(uuidv4(), doc.title, doc.content).run()).meta;
+    let newId = uuidv4();
+    const { duration } = (await c.env.DB.prepare('INSERT INTO Documents (id, title, content) VALUES (?1, ?2, ?3)').bind(newId, doc.title, doc.content).run()).meta;
     let res: BaseResponseDTO<any> = {
       code: 200,
       message: `Document Saved in ${duration} s`,
-      data: last_row_id
+      data: newId
     }
     return c.json(res);
   } catch (e) {
